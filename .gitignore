@@ -1,0 +1,9 @@
+target/
+.runtime/
+*.ior
+.env
+.idea/
+.vscode/
+*.iml
+
+/starter-kit-mobilite final/
