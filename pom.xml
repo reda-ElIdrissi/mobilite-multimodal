@@ -23,6 +23,7 @@
 
   <modules>
     <module>contracts</module>
+    <module>mobility-observability</module>
   </modules>
 
   <dependencyManagement>
