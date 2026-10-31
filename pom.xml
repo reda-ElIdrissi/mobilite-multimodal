@@ -24,6 +24,7 @@
   <modules>
     <module>contracts</module>
     <module>mobility-observability</module>
+    <module>operator-journal</module>
     <module>search-catalog</module>
   </modules>
 
