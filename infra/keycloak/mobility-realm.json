@@ -1,0 +1,198 @@
+{
+  "realm": "mobility",
+  "enabled": true,
+  "registrationAllowed": false,
+  "roles": {
+    "realm": [
+      {
+        "name": "CUSTOMER"
+      },
+      {
+        "name": "OWNER"
+      },
+      {
+        "name": "PRICING_ADMIN"
+      },
+      {
+        "name": "SUPPORT_ADMIN"
+      }
+    ]
+  },
+  "clientScopes": [
+    {
+      "name": "mobility-audience",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "mobility-api",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "mobility-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "name": "locations:read",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      }
+    },
+    {
+      "name": "offers:read",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      }
+    },
+    {
+      "name": "pricing:issue",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      }
+    },
+    {
+      "name": "pricing:claim",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      }
+    },
+    {
+      "name": "operators:write",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      }
+    },
+    {
+      "name": "reservations:outcome",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      }
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "mobility-web",
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "http://localhost:3000/*"
+      ],
+      "webOrigins": [
+        "http://localhost:3000"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "defaultClientScopes": [
+        "mobility-audience",
+        "locations:read"
+      ],
+      "protocolMappers": [
+        {
+          "name": "mobility realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "multivalued": "true",
+            "claim.name": "realm_access.roles",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        },
+        {
+          "name": "mobility subject",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-sub-mapper",
+          "config": {
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "search-bff",
+      "secret": "${MOBILITY_BFF_SECRET}",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "defaultClientScopes": [
+        "mobility-audience",
+        "offers:read",
+        "pricing:issue"
+      ]
+    },
+    {
+      "clientId": "reservation-service",
+      "secret": "${MOBILITY_RESERVATION_SECRET}",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "defaultClientScopes": [
+        "mobility-audience",
+        "pricing:claim",
+        "operators:write",
+        "offers:read"
+      ]
+    },
+    {
+      "clientId": "pricing-service",
+      "secret": "${MOBILITY_PRICING_SECRET}",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "defaultClientScopes": [
+        "mobility-audience",
+        "reservations:outcome"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "demo-traveler",
+      "enabled": true,
+      "firstName": "Demo",
+      "lastName": "Traveler",
+      "email": "demo-traveler@example.invalid",
+      "emailVerified": true,
+      "realmRoles": ["CUSTOMER"],
+      "credentials": [{"type": "password", "value": "${MOBILITY_DEMO_TRAVELER_PASSWORD}", "temporary": false}]
+    },
+    {
+      "id": "74fe3186-57c1-43a6-8f75-95cc328f77b3",
+      "username": "demo-owner",
+      "enabled": true,
+      "firstName": "Demo",
+      "lastName": "Owner",
+      "email": "demo-owner@example.invalid",
+      "emailVerified": true,
+      "realmRoles": [
+        "CUSTOMER",
+        "OWNER"
+      ]
+    }
+  ],
+  "accessTokenLifespan": 300
+}
