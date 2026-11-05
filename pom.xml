@@ -27,6 +27,7 @@
     <module>operator-journal</module>
     <module>search-catalog</module>
     <module>rail-bridge</module>
+    <module>air-bridge</module>
     <module>api-gateway</module>
   </modules>
 
