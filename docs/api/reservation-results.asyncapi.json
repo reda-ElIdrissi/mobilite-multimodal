@@ -1,0 +1,228 @@
+{
+  "asyncapi": "3.0.0",
+  "info": {
+    "title": "R?sultats des r?servations",
+    "version": "1.0.0",
+    "description": "R?sultats publi?s en mode au moins une fois. Files pricing.reservation-results et notification.reservation-results, avec une DLQ chacune."
+  },
+  "channels": {
+    "outcome1": {
+      "address": "reservation.confirmed.v1",
+      "messages": {
+        "result": {
+          "$ref": "#/components/messages/ReservationResult"
+        }
+      },
+      "bindings": {
+        "amqp": {
+          "is": "routingKey",
+          "exchange": {
+            "name": "mobility.events",
+            "type": "topic",
+            "durable": true
+          },
+          "bindingVersion": "0.3.0"
+        }
+      }
+    },
+    "outcome2": {
+      "address": "reservation.failed-compensated.v1",
+      "messages": {
+        "result": {
+          "$ref": "#/components/messages/ReservationResult"
+        }
+      },
+      "bindings": {
+        "amqp": {
+          "is": "routingKey",
+          "exchange": {
+            "name": "mobility.events",
+            "type": "topic",
+            "durable": true
+          },
+          "bindingVersion": "0.3.0"
+        }
+      }
+    },
+    "outcome3": {
+      "address": "reservation.cancelled.v1",
+      "messages": {
+        "result": {
+          "$ref": "#/components/messages/ReservationResult"
+        }
+      },
+      "bindings": {
+        "amqp": {
+          "is": "routingKey",
+          "exchange": {
+            "name": "mobility.events",
+            "type": "topic",
+            "durable": true
+          },
+          "bindingVersion": "0.3.0"
+        }
+      }
+    },
+    "outcome4": {
+      "address": "reservation.reconciliation-required.v1",
+      "messages": {
+        "result": {
+          "$ref": "#/components/messages/ReservationResult"
+        }
+      },
+      "bindings": {
+        "amqp": {
+          "is": "routingKey",
+          "exchange": {
+            "name": "mobility.events",
+            "type": "topic",
+            "durable": true
+          },
+          "bindingVersion": "0.3.0"
+        }
+      }
+    }
+  },
+  "operations": {
+    "publish1": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/outcome1"
+      }
+    },
+    "publish2": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/outcome2"
+      }
+    },
+    "publish3": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/outcome3"
+      }
+    },
+    "publish4": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/outcome4"
+      }
+    }
+  },
+  "components": {
+    "messages": {
+      "ReservationResult": {
+        "name": "ReservationResult",
+        "contentType": "application/json",
+        "headers": {
+          "type": "object",
+          "properties": {
+            "traceparent": {
+              "type": "string"
+            }
+          }
+        },
+        "payload": {
+          "type": "object",
+          "required": [
+            "eventId",
+            "eventType",
+            "schemaVersion",
+            "occurredAt",
+            "reservationId",
+            "aggregateVersion",
+            "userId",
+            "correlationId",
+            "causationId",
+            "payload"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "eventType": {
+              "type": "string",
+              "enum": [
+                "reservation.confirmed.v1",
+                "reservation.failed-compensated.v1",
+                "reservation.cancelled.v1",
+                "reservation.reconciliation-required.v1"
+              ]
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "enum": [
+                1
+              ]
+            },
+            "occurredAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "reservationId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "aggregateVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "userId": {
+              "type": "string"
+            },
+            "correlationId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "causationId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "payload": {
+              "type": "object",
+              "properties": {
+                "devisId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "reservationStatus": {
+                  "type": "string",
+                  "enum": [
+                    "CONFIRMED",
+                    "CANCELLED",
+                    "FAILED_COMPENSATED",
+                    "NEEDS_RECONCILIATION"
+                  ]
+                },
+                "quoteOutcome": {
+                  "type": "string",
+                  "enum": [
+                    "UNCHANGED",
+                    "VOID",
+                    "CONSUMED"
+                  ]
+                },
+                "everConfirmed": {
+                  "type": "boolean"
+                },
+                "failureCode": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "devisId",
+                "reservationStatus",
+                "quoteOutcome",
+                "everConfirmed"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
