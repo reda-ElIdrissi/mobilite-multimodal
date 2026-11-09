@@ -30,6 +30,7 @@
     <module>rail-bridge</module>
     <module>air-bridge</module>
     <module>api-gateway</module>
+    <module>tarification</module>
   </modules>
 
   <dependencyManagement>
