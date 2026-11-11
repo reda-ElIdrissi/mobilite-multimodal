@@ -27,6 +27,7 @@
     <module>result-events</module>
     <module>operator-journal</module>
     <module>search-catalog</module>
+    <module>autopartage</module>
     <module>rail-bridge</module>
     <module>air-bridge</module>
     <module>api-gateway</module>
