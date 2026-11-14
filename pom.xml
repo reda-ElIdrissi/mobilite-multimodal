@@ -32,6 +32,7 @@
     <module>air-bridge</module>
     <module>api-gateway</module>
     <module>tarification</module>
+    <module>reservation</module>
   </modules>
 
   <dependencyManagement>
