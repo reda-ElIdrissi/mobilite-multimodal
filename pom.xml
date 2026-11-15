@@ -33,6 +33,7 @@
     <module>api-gateway</module>
     <module>tarification</module>
     <module>reservation</module>
+    <module>notification</module>
   </modules>
 
   <dependencyManagement>
