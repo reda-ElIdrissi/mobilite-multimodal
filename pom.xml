@@ -31,6 +31,7 @@
     <module>rail-bridge</module>
     <module>air-bridge</module>
     <module>api-gateway</module>
+    <module>search-bff</module>
     <module>tarification</module>
     <module>reservation</module>
     <module>notification</module>
