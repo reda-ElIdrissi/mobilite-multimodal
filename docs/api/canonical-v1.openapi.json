@@ -1,0 +1,3042 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Contrats canoniques de mobilité",
+    "version": "1.0.0",
+    "description": "Recherche, tarification, saga de r?servation et notifications in-app."
+  },
+  "paths": {
+    "/internal/v1/offers/search": {
+      "post": {
+        "operationId": "searchOffers",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfferSearch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Offres observées",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Offer"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Demande invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarRequestError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Opérateur indisponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperatorError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT absent ou invalide"
+          },
+          "403": {
+            "description": "Scope insuffisant"
+          }
+        },
+        "security": [
+          {
+            "serviceJwt": []
+          }
+        ]
+      }
+    },
+    "/internal/v1/holds": {
+      "post": {
+        "operationId": "createHold",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HoldCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Resultat connu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HoldReceipt"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Operation en cours",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationStatus"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflit ou rejet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperatorError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Dependance indisponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperatorError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Scope technique requis"
+          }
+        },
+        "description": "Scope operators:write, avec cl? operationId stable et appartenance ? la m?me ligne de r?servation.",
+        "security": [
+          {
+            "serviceJwt": []
+          }
+        ]
+      }
+    },
+    "/internal/v1/holds/{holdId}/confirm": {
+      "parameters": [
+        {
+          "name": "holdId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "confirmHold",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resultat connu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmationReceipt"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Operation en cours",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationStatus"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflit ou rejet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperatorError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Dependance indisponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperatorError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Scope technique requis"
+          }
+        },
+        "description": "Scope operators:write, avec cl? operationId stable et appartenance ? la m?me ligne de r?servation.",
+        "security": [
+          {
+            "serviceJwt": []
+          }
+        ]
+      }
+    },
+    "/internal/v1/cancellations": {
+      "post": {
+        "operationId": "cancel",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resultat connu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancellationReceipt"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Operation en cours",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationStatus"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflit ou rejet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperatorError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Dependance indisponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperatorError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Scope technique requis"
+          }
+        },
+        "description": "Scope operators:write, avec cl? operationId stable et appartenance ? la m?me ligne de r?servation.",
+        "security": [
+          {
+            "serviceJwt": []
+          }
+        ]
+      }
+    },
+    "/internal/v1/operations/{operationId}": {
+      "parameters": [
+        {
+          "name": "operationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getOperation",
+        "responses": {
+          "200": {
+            "description": "Etat durable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Operation absente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Journal indisponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperatorError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "serviceJwt": []
+          }
+        ]
+      }
+    },
+    "/api/v1/search": {
+      "post": {
+        "operationId": "searchDirectOffers",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recherche compl?te ou partielle",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Demande invalide",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Aucun op?rateur demand? ne r?pond",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResult"
+                }
+              }
+            }
+          }
+        },
+        "description": "Recherche publique. Un champ de composition non nul active la recherche d'itinéraires. Le classement porte sur les candidats explorés. Envoyer selection au POST /api/v1/quotes après confirmation des conducteurs pour obtenir un devis ferme."
+      }
+    },
+    "/api/v1/quotes": {
+      "post": {
+        "operationId": "issueQuote",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Devis ?mis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Quote"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Demande invalide"
+          },
+          "401": {
+            "description": "JWT absent ou invalide"
+          },
+          "409": {
+            "description": "Offre indisponible ou conflit de r?clamation"
+          },
+          "503": {
+            "description": "D?pendance indisponible"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteSelection"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quotes/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "readQuote",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Succ?s",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Quote"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT absent ou invalide"
+          },
+          "404": {
+            "description": "Devis introuvable"
+          },
+          "503": {
+            "description": "D?pendance indisponible"
+          }
+        }
+      }
+    },
+    "/internal/v1/pricing/preview": {
+      "post": {
+        "operationId": "previewPrices",
+        "security": [
+          {
+            "serviceJwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Succ?s",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/QuotePrice"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Demande invalide"
+          },
+          "401": {
+            "description": "JWT absent ou invalide"
+          },
+          "403": {
+            "description": "Droits insuffisants"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PricingPreviewBatch"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/v1/quotes": {
+      "post": {
+        "operationId": "issueVerifiedQuote",
+        "security": [
+          {
+            "serviceJwt": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Devis ?mis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Quote"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Demande invalide"
+          },
+          "401": {
+            "description": "JWT absent ou invalide"
+          },
+          "403": {
+            "description": "Droits insuffisants"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteIssue"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/v1/quotes/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "actorUserId",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "readVerifiedQuote",
+        "security": [
+          {
+            "serviceJwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Succ?s",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Quote"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT absent ou invalide"
+          },
+          "403": {
+            "description": "Droits insuffisants"
+          },
+          "404": {
+            "description": "Devis introuvable"
+          }
+        }
+      }
+    },
+    "/internal/v1/quotes/{id}/claim": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "claimQuote",
+        "security": [
+          {
+            "serviceJwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Succ?s",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Quote"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Demande invalide"
+          },
+          "401": {
+            "description": "JWT absent ou invalide"
+          },
+          "403": {
+            "description": "Droits insuffisants"
+          },
+          "404": {
+            "description": "Devis introuvable"
+          },
+          "409": {
+            "description": "Offre indisponible ou conflit de r?clamation"
+          },
+          "410": {
+            "description": "Devis expir?"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteClaim"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/regles": {
+      "get": {
+        "operationId": "listRules",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Succ?s",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rule"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT absent ou invalide"
+          },
+          "403": {
+            "description": "Droits insuffisants"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/regles/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "put": {
+        "operationId": "saveRule",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Configuration enregistr?e"
+          },
+          "400": {
+            "description": "Demande invalide"
+          },
+          "401": {
+            "description": "JWT absent ou invalide"
+          },
+          "403": {
+            "description": "Droits insuffisants"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleInput"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deactivateRule",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Configuration enregistr?e"
+          },
+          "400": {
+            "description": "Demande invalide"
+          },
+          "401": {
+            "description": "JWT absent ou invalide"
+          },
+          "403": {
+            "description": "Droits insuffisants"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/promotions": {
+      "get": {
+        "operationId": "listPromotions",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Succ?s",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Promotion"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT absent ou invalide"
+          },
+          "403": {
+            "description": "Droits insuffisants"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/promotions/{code}": {
+      "parameters": [
+        {
+          "name": "code",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "put": {
+        "operationId": "savePromotion",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Configuration enregistr?e"
+          },
+          "400": {
+            "description": "Demande invalide"
+          },
+          "401": {
+            "description": "JWT absent ou invalide"
+          },
+          "403": {
+            "description": "Droits insuffisants"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromotionInput"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deactivatePromotion",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Configuration enregistr?e"
+          },
+          "400": {
+            "description": "Demande invalide"
+          },
+          "401": {
+            "description": "JWT absent ou invalide"
+          },
+          "403": {
+            "description": "Droits insuffisants"
+          }
+        }
+      }
+    },
+    "/api/v1/vehicules/{id}/handover": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "handoverVehicle",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandoverRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Remise enregistr?e",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Handover"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Propri?taire requis"
+          },
+          "409": {
+            "description": "Remise impossible pour cet ?tat ou cette date"
+          }
+        }
+      }
+    },
+    "/api/v1/reservations": {
+      "post": {
+        "operationId": "createReservation",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Dossier accept?. Suivre Location pour le r?sultat.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservationView"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Devis introuvable"
+          },
+          "409": {
+            "description": "Devis ou cl? d?j? utilis?e"
+          },
+          "410": {
+            "description": "Devis expir?"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservationRequest"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        ]
+      },
+      "get": {
+        "operationId": "listReservations",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historique",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReservationView"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/reservations/{id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getReservation",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dossier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservationView"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dossier introuvable"
+          }
+        }
+      }
+    },
+    "/api/v1/reservations/{id}/cancel": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "cancelReservation",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Dossier accept?. Suivre Location pour le r?sultat.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservationView"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Annulation impossible"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/reservations/{id}/hold-expiry-evidence": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "recordHoldExpiryEvidence",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Preuve enregistr?e"
+          },
+          "409": {
+            "description": "Preuve inapplicable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HoldExpiryEvidence"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reservations/{id}/operations": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "inspectSaga",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "?tapes de la saga et leurs r?sultats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/v1/reservations/{id}/outcome": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getReservationOutcome",
+        "security": [
+          {
+            "serviceJwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "R?sultat du dossier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "operationId": "listNotifications",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "unread",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notifications du sujet authentifi?",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Notification"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT requis"
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/{id}/read": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "patch": {
+        "operationId": "markNotificationRead",
+        "security": [
+          {
+            "userJwt": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Notification marqu?e comme lue"
+          },
+          "404": {
+            "description": "Notification introuvable pour le sujet"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Money": {
+        "type": "object",
+        "required": [
+          "amountMinor",
+          "currency"
+        ],
+        "properties": {
+          "amountMinor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "MAD"
+            ]
+          }
+        }
+      },
+      "Place": {
+        "type": "object",
+        "required": [
+          "cityCode",
+          "displayName",
+          "zoneId"
+        ],
+        "properties": {
+          "cityCode": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "zoneId": {
+            "type": "string",
+            "description": "Identifiant IANA"
+          }
+        }
+      },
+      "OfferSearch": {
+        "type": "object",
+        "required": [
+          "origin",
+          "destination",
+          "date"
+        ],
+        "properties": {
+          "origin": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "dateFin": {
+            "type": "string",
+            "format": "date"
+          },
+          "capacity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "category": {
+            "type": "string"
+          }
+        }
+      },
+      "Offer": {
+        "type": "object",
+        "required": [
+          "operator",
+          "mode",
+          "offerId",
+          "origin",
+          "destination",
+          "unitPriceMinor",
+          "unitType",
+          "capacity",
+          "availabilityKind",
+          "observedAt"
+        ],
+        "properties": {
+          "operator": {
+            "type": "string",
+            "enum": [
+              "RAIL",
+              "AIR",
+              "CAR"
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "TRAIN",
+              "AVION",
+              "VOITURE"
+            ]
+          },
+          "offerId": {
+            "type": "string"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/Place"
+          },
+          "destination": {
+            "$ref": "#/components/schemas/Place"
+          },
+          "departureAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "arrivalAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "startDate": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "endDate": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "unitPriceMinor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "unitType": {
+            "type": "string",
+            "enum": [
+              "SEAT",
+              "DAY"
+            ]
+          },
+          "priceVersion": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "capacity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "availabilityKind": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE_SEATS",
+              "VEHICLE_CAPACITY"
+            ]
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Allocation": {
+        "type": "object",
+        "required": [
+          "allocationId",
+          "operator",
+          "offerId",
+          "mode",
+          "seatsOrPassengers",
+          "quantity",
+          "unitType",
+          "participantAliases",
+          "unitPrice"
+        ],
+        "properties": {
+          "allocationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "operator": {
+            "type": "string",
+            "enum": [
+              "RAIL",
+              "AIR",
+              "CAR"
+            ]
+          },
+          "offerId": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "TRAIN",
+              "AVION",
+              "VOITURE"
+            ]
+          },
+          "seatsOrPassengers": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "unitType": {
+            "type": "string",
+            "enum": [
+              "SEAT",
+              "DAY"
+            ]
+          },
+          "departureAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "arrivalAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "participantAliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "driverAlias": {
+            "type": "string"
+          },
+          "unitPrice": {
+            "$ref": "#/components/schemas/Money"
+          },
+          "priceVersion": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        }
+      },
+      "Segment": {
+        "type": "object",
+        "required": [
+          "segmentIndex",
+          "origin",
+          "destination",
+          "allocations"
+        ],
+        "properties": {
+          "segmentIndex": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "origin": {
+            "$ref": "#/components/schemas/Place"
+          },
+          "destination": {
+            "$ref": "#/components/schemas/Place"
+          },
+          "plannedDeparture": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "plannedArrival": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "allocations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Allocation"
+            }
+          }
+        }
+      },
+      "Itinerary": {
+        "type": "object",
+        "required": [
+          "travelerCount",
+          "participants",
+          "segments",
+          "timingAssumptions"
+        ],
+        "properties": {
+          "travelerCount": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Segment"
+            }
+          },
+          "timingAssumptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "HoldReceipt": {
+        "type": "object",
+        "required": [
+          "holdId",
+          "expiresAt",
+          "operationId"
+        ],
+        "properties": {
+          "holdId": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ConfirmationReceipt": {
+        "type": "object",
+        "required": [
+          "bookingRef",
+          "operationId"
+        ],
+        "properties": {
+          "bookingRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "OperatorError": {
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "outcome",
+          "retryable",
+          "correlationId"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "REJECTED",
+              "UNKNOWN"
+            ]
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "correlationId": {
+            "type": "string"
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri-reference"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 400
+          },
+          "detail": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "traceId": {
+            "type": "string"
+          }
+        }
+      },
+      "CarDetails": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "passengerCount": {
+            "type": "integer",
+            "minimum": 1,
+            "format": "int32"
+          },
+          "driverAlias": {
+            "type": "string"
+          },
+          "expectedDailyRateMinor": {
+            "type": "integer",
+            "minimum": 1,
+            "format": "int64"
+          },
+          "expectedPriceVersion": {
+            "type": "integer",
+            "minimum": 0,
+            "format": "int64"
+          },
+          "origin": {
+            "type": "string",
+            "description": "Code canonique de la ville de d?part au moment du devis."
+          }
+        },
+        "required": [
+          "startDate",
+          "endDate",
+          "destination",
+          "passengerCount",
+          "driverAlias",
+          "expectedDailyRateMinor",
+          "expectedPriceVersion",
+          "origin"
+        ]
+      },
+      "HoldCommand": {
+        "type": "object",
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reservationLineId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "offerId": {
+            "type": "string"
+          },
+          "seats": {
+            "type": "integer",
+            "minimum": 1,
+            "format": "int32"
+          },
+          "car": {
+            "$ref": "#/components/schemas/CarDetails"
+          },
+          "actorUserId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "operationId",
+          "reservationLineId",
+          "offerId",
+          "actorUserId"
+        ]
+      },
+      "ConfirmCommand": {
+        "type": "object",
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reservationLineId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "operationId",
+          "reservationLineId"
+        ]
+      },
+      "CancelCommand": {
+        "type": "object",
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reservationLineId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "referenceKind": {
+            "type": "string",
+            "enum": [
+              "HOLD",
+              "BOOKING"
+            ]
+          }
+        },
+        "required": [
+          "operationId",
+          "reservationLineId",
+          "reference",
+          "referenceKind"
+        ]
+      },
+      "CancellationReceipt": {
+        "type": "object",
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "CANCELLED"
+            ]
+          }
+        },
+        "required": [
+          "operationId",
+          "status"
+        ]
+      },
+      "OperationStatus": {
+        "type": "object",
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "PLANNED",
+              "IN_FLIGHT",
+              "SUCCEEDED",
+              "REJECTED",
+              "UNKNOWN",
+              "NOT_SENT"
+            ]
+          },
+          "hold": {
+            "$ref": "#/components/schemas/HoldReceipt"
+          },
+          "confirmation": {
+            "$ref": "#/components/schemas/ConfirmationReceipt"
+          },
+          "cancellation": {
+            "$ref": "#/components/schemas/CancellationReceipt"
+          },
+          "error": {
+            "$ref": "#/components/schemas/OperatorError"
+          }
+        },
+        "required": [
+          "operationId",
+          "state"
+        ]
+      },
+      "CarRequestError": {
+        "type": "object",
+        "required": [
+          "status",
+          "code",
+          "message",
+          "fieldErrors"
+        ],
+        "properties": {
+          "status": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "fieldErrors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "SearchRequest": {
+        "type": "object",
+        "required": [
+          "origin",
+          "destination",
+          "date"
+        ],
+        "properties": {
+          "origin": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "dateFin": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "description": "Date de fin inclusive pour la voiture."
+          },
+          "travelerCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 100,
+            "default": 1
+          },
+          "modes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "TRAIN",
+                "AVION",
+                "VOITURE"
+              ]
+            }
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "maxSegments": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 3,
+            "default": 3,
+            "description": "Nombre maximal de segments en mode composition."
+          },
+          "via": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 2,
+            "uniqueItems": true,
+            "description": "Villes intermédiaires imposées dans l'ordre. Si vide, explorer le catalogue."
+          },
+          "driverCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Nombre de conducteurs provisoires, borné par travelerCount. Par défaut, travelerCount."
+          },
+          "carDurationMinutes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 1440,
+            "default": 60,
+            "description": "Durée indicative de chaque trajet voiture, en minutes."
+          }
+        }
+      },
+      "SearchResult": {
+        "type": "object",
+        "required": [
+          "offers",
+          "partial",
+          "truncated",
+          "errors",
+          "itineraries",
+          "assumptions"
+        ],
+        "properties": {
+          "offers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Offer"
+            },
+            "maxItems": 100
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "errors": {
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "RAIL",
+                "AIR",
+                "CAR"
+              ]
+            },
+            "additionalProperties": {
+              "$ref": "#/components/schemas/OperatorError"
+            }
+          },
+          "itineraries": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/SearchCandidate"
+            }
+          },
+          "assumptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "pricingError": {
+            "enum": [
+              "PRICING_UNAVAILABLE",
+              null
+            ]
+          }
+        }
+      },
+      "QuoteSelection": {
+        "type": "object",
+        "properties": {
+          "travelerCount": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SelectedSegment"
+            },
+            "minItems": 1,
+            "maxItems": 3
+          },
+          "promoCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "travelerCount",
+          "participants",
+          "segments"
+        ],
+        "additionalProperties": false
+      },
+      "SelectedSegment": {
+        "type": "object",
+        "properties": {
+          "segmentIndex": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "origin": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "plannedDeparture": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "plannedArrival": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "allocations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SelectedAllocation"
+            },
+            "minItems": 1,
+            "maxItems": 3
+          }
+        },
+        "required": [
+          "segmentIndex",
+          "origin",
+          "destination",
+          "plannedDeparture",
+          "plannedArrival",
+          "allocations"
+        ],
+        "additionalProperties": false
+      },
+      "SelectedAllocation": {
+        "type": "object",
+        "properties": {
+          "operator": {
+            "type": "string",
+            "enum": [
+              "RAIL",
+              "AIR",
+              "CAR"
+            ]
+          },
+          "offerId": {
+            "type": "string"
+          },
+          "passengerCount": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "participantAliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "driverAlias": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "startDate": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "endDate": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          }
+        },
+        "required": [
+          "operator",
+          "offerId",
+          "passengerCount",
+          "participantAliases"
+        ],
+        "additionalProperties": false
+      },
+      "PricingBasket": {
+        "type": "object",
+        "properties": {
+          "itinerary": {
+            "$ref": "#/components/schemas/Itinerary"
+          },
+          "promoCode": {
+            "type": "string"
+          },
+          "categories": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "itinerary",
+          "categories"
+        ]
+      },
+      "PricingPreviewBatch": {
+        "type": "object",
+        "properties": {
+          "baskets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PricingBasket"
+            },
+            "minItems": 1,
+            "maxItems": 20
+          }
+        },
+        "required": [
+          "baskets"
+        ]
+      },
+      "QuoteIssue": {
+        "type": "object",
+        "properties": {
+          "actorUserId": {
+            "type": "string"
+          },
+          "basket": {
+            "$ref": "#/components/schemas/PricingBasket"
+          }
+        },
+        "required": [
+          "actorUserId",
+          "basket"
+        ]
+      },
+      "QuoteClaim": {
+        "type": "object",
+        "properties": {
+          "actorUserId": {
+            "type": "string"
+          },
+          "reservationId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "actorUserId",
+          "reservationId"
+        ]
+      },
+      "Quote": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reservationId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ISSUED",
+              "CLAIMED",
+              "EXPIRED",
+              "CONSUMED",
+              "VOID"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "itineraryHash": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "price": {
+            "$ref": "#/components/schemas/QuotePrice"
+          }
+        },
+        "required": [
+          "id",
+          "reservationId",
+          "status",
+          "createdAt",
+          "expiresAt",
+          "itineraryHash",
+          "version",
+          "price"
+        ]
+      },
+      "QuotePrice": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "$ref": "#/components/schemas/Money"
+          },
+          "promoCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "rulesetVersion": {
+            "type": "string"
+          },
+          "itinerary": {
+            "$ref": "#/components/schemas/Itinerary"
+          },
+          "categories": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuoteLine"
+            }
+          }
+        },
+        "required": [
+          "total",
+          "promoCode",
+          "rulesetVersion",
+          "itinerary",
+          "categories",
+          "lines"
+        ]
+      },
+      "QuoteLine": {
+        "type": "object",
+        "properties": {
+          "lineId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "allocationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "segmentIndex": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "grossMinor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "feeMinor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "discountMinor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "totalMinor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "adjustments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuoteAdjustment"
+            }
+          }
+        },
+        "required": [
+          "lineId",
+          "allocationId",
+          "segmentIndex",
+          "grossMinor",
+          "feeMinor",
+          "discountMinor",
+          "totalMinor",
+          "adjustments"
+        ]
+      },
+      "QuoteAdjustment": {
+        "type": "object",
+        "properties": {
+          "sourceType": {
+            "type": "string",
+            "enum": [
+              "RULE",
+              "PROMOTION"
+            ]
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "sourceVersion": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "amountMinor": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "parameters": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sourceType",
+          "sourceId",
+          "sourceVersion",
+          "amountMinor",
+          "parameters"
+        ]
+      },
+      "RuleCondition": {
+        "type": "object",
+        "properties": {
+          "minDistinctModes": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "minSubtotalMinor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "minTravelers": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "minRentalDays": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "category": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "TRAIN",
+              "AVION",
+              "VOITURE"
+            ]
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "RuleInput": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "FIXED_FEE_PER_ALLOCATION",
+              "FIXED_FEE_PER_BOOKING",
+              "PERCENT_DISCOUNT",
+              "FIXED_DISCOUNT"
+            ]
+          },
+          "condition": {
+            "$ref": "#/components/schemas/RuleCondition"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "TRAIN",
+              "AVION",
+              "VOITURE"
+            ]
+          },
+          "amountMinor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "rateBps": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "priority": {
+            "type": "integer"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "validTo": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      "PromotionInput": {
+        "type": "object",
+        "properties": {
+          "rateBps": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "validTo": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "TRAIN",
+                "AVION",
+                "VOITURE"
+              ]
+            }
+          }
+        },
+        "required": [
+          "rateBps"
+        ],
+        "additionalProperties": false
+      },
+      "Rule": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "settings": {
+            "$ref": "#/components/schemas/RuleInput"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "settings"
+        ]
+      },
+      "Promotion": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "settings": {
+            "$ref": "#/components/schemas/PromotionInput"
+          }
+        },
+        "required": [
+          "code",
+          "version",
+          "settings"
+        ]
+      },
+      "HandoverRequest": {
+        "type": "object",
+        "required": [
+          "locationId",
+          "city"
+        ],
+        "properties": {
+          "locationId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "city": {
+            "type": "string"
+          }
+        }
+      },
+      "Handover": {
+        "type": "object",
+        "required": [
+          "locationId",
+          "city",
+          "handedOverAt"
+        ],
+        "properties": {
+          "locationId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "city": {
+            "type": "string"
+          },
+          "handedOverAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ReservationRequest": {
+        "type": "object",
+        "properties": {
+          "devisId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "devisId"
+        ]
+      },
+      "ReservationView": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "devisId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING_QUOTE",
+              "HOLDING",
+              "CONFIRMING",
+              "CONFIRMED",
+              "COMPENSATING",
+              "CANCELLING",
+              "CANCELLED",
+              "FAILED_COMPENSATED",
+              "NEEDS_RECONCILIATION"
+            ]
+          },
+          "total": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReservationLine"
+            }
+          },
+          "failureCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "id",
+          "devisId",
+          "status",
+          "total",
+          "lines",
+          "failureCode",
+          "createdAt",
+          "version"
+        ]
+      },
+      "ReservationLine": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "segmentIndex": {
+            "type": "integer"
+          },
+          "allocation": {
+            "$ref": "#/components/schemas/Allocation"
+          },
+          "price": {
+            "$ref": "#/components/schemas/QuoteLine"
+          },
+          "holdId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "bookingRef": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "segmentIndex",
+          "allocation",
+          "price",
+          "holdId",
+          "bookingRef",
+          "state"
+        ]
+      },
+      "HoldExpiryEvidence": {
+        "type": "object",
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "executionUpperBoundAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "evidence": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "operationId",
+          "executionUpperBoundAt",
+          "evidence"
+        ]
+      },
+      "ReservationOutcome": {
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "devisId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reservationStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING_QUOTE",
+              "HOLDING",
+              "CONFIRMING",
+              "CONFIRMED",
+              "COMPENSATING",
+              "CANCELLING",
+              "CANCELLED",
+              "FAILED_COMPENSATED",
+              "NEEDS_RECONCILIATION"
+            ]
+          },
+          "quoteOutcome": {
+            "type": "string",
+            "enum": [
+              "UNCHANGED",
+              "VOID",
+              "CONSUMED"
+            ]
+          },
+          "everConfirmed": {
+            "type": "boolean"
+          },
+          "failureCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "aggregateVersion": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "reservationId",
+          "devisId",
+          "reservationStatus",
+          "quoteOutcome",
+          "everConfirmed",
+          "failureCode",
+          "aggregateVersion"
+        ]
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reservationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "CONFIRMED",
+              "CANCELLED",
+              "FAILED_COMPENSATED",
+              "NEEDS_RECONCILIATION"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "READ",
+              "UNREAD"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "readAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "current": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "reservationId",
+          "type",
+          "message",
+          "status",
+          "createdAt",
+          "readAt",
+          "current"
+        ]
+      },
+      "SearchCandidate": {
+        "type": "object",
+        "required": [
+          "selection",
+          "availability"
+        ],
+        "properties": {
+          "selection": {
+            "$ref": "#/components/schemas/QuoteSelection"
+          },
+          "estimatedTotal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "availability": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchAllocationObservation"
+            }
+          }
+        }
+      },
+      "SearchAllocationObservation": {
+        "type": "object",
+        "required": [
+          "segmentIndex",
+          "operator",
+          "offerId",
+          "capacity",
+          "availabilityKind"
+        ],
+        "properties": {
+          "segmentIndex": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "operator": {
+            "enum": [
+              "RAIL",
+              "AIR",
+              "CAR"
+            ]
+          },
+          "offerId": {
+            "type": "string"
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "availabilityKind": {
+            "enum": [
+              "AVAILABLE_SEATS",
+              "VEHICLE_CAPACITY"
+            ]
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "serviceJwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT technique, audience mobility-api. La recherche Autopartage exige offers:read."
+      },
+      "userJwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
