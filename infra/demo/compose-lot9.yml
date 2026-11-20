@@ -1,0 +1,14 @@
+services:
+  reservation:
+    environment:
+      SPRING_PROFILES_ACTIVE: demo,demo-contention,demo-expiry
+      MOBILITY_RESERVATION_HOLD_MARGIN: PT5S
+      MOBILITY_RESERVATION_LEASE: PT60S
+      MOBILITY_DEMO_CAR_CONFIRM_TIMEOUT: PT45S
+    volumes:
+      - ./.runtime/lot9-barrier:/demo
+  autopartage:
+    environment:
+      SPRING_PROFILES_ACTIVE: demo,demo-expiry
+      MOBILITY_CAR_HOLD_TTL: PT30S
+      MOBILITY_DEMO_CONFIRM_DELAY: PT35S
