@@ -1,0 +1,64 @@
+# JetBrains HTTP Client. Run these requests in order.
+# Set accessToken from: bash scripts/demo.sh token
+# For compensation, start the T11 override as described in the README,
+# then rerun the whole sequence with a fresh quote. Poll both GET requests.
+# Expect FAILED_COMPENSATED / HOLD_EXPIRED and VOID in that profile. Skip cancellation.
+@base = http://127.0.0.1:8080/api/v1
+@accessToken = paste-demo-token-here
+
+### Search the three real operators
+POST {{base}}/search
+Content-Type: application/json
+
+{"origin":"CAS","destination":"VERSAILLES","date":"2026-11-15","dateFin":"2026-11-16","travelerCount":2,"driverCount":1,"maxSegments":3,"via":["RAB","PAR"]}
+
+> {%
+    client.test("Itinerary available", function () {
+        client.assert(response.status === 200 && !response.body.partial);
+    });
+    const candidate = response.body.itineraries.find(item =>
+        item.selection.segments[2].allocations[0].startDate === "2026-11-15");
+    client.assert(candidate, "No first-day itinerary");
+    client.global.set("selection", JSON.stringify(candidate.selection));
+%}
+
+### Issue a quote for the selected itinerary
+POST {{base}}/quotes
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{{selection}}
+
+> {%
+    client.assert(response.status === 201 && response.body.id);
+    client.global.set("quoteId", response.body.id);
+%}
+
+### Reserve (replay with the same key to retrieve the same dossier)
+POST {{base}}/reservations
+Authorization: Bearer {{accessToken}}
+Idempotency-Key: demo-create-{{quoteId}}
+Content-Type: application/json
+
+{"devisId":"{{quoteId}}"}
+
+> {%
+    client.assert(response.status === 202 && response.body.id);
+    client.global.set("reservationId", response.body.id);
+%}
+
+### Poll the reservation until CONFIRMED or FAILED_COMPENSATED
+GET {{base}}/reservations/{{reservationId}}
+Authorization: Bearer {{accessToken}}
+
+### Inspect the quote (VOID after compensation, CONSUMED after confirmation)
+GET {{base}}/quotes/{{quoteId}}
+Authorization: Bearer {{accessToken}}
+
+### Nominal only — cancel to release resources, then poll the reservation again
+POST {{base}}/reservations/{{reservationId}}/cancel
+Authorization: Bearer {{accessToken}}
+Idempotency-Key: demo-cancel-{{reservationId}}
+Content-Type: application/json
+
+{}
