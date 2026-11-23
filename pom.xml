@@ -23,6 +23,7 @@
 
   <modules>
     <module>contracts</module>
+    <module>pricing-grpc</module>
     <module>mobility-observability</module>
     <module>result-events</module>
     <module>operator-journal</module>

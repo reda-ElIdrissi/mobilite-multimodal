@@ -1,0 +1,82 @@
+syntax = "proto3";
+package mobility.pricing.v1;
+option java_package = "com.transport.mobility.pricing.grpc";
+option java_outer_classname = "PricingPreview";
+
+service PreviewPricing {
+  rpc Preview(PreviewRequest) returns (PreviewResponse);
+}
+
+message PreviewRequest { repeated Basket baskets = 1; }
+message PreviewResponse { repeated Price prices = 1; }
+
+message Basket {
+  int32 traveler_count = 1;
+  repeated string participants = 2;
+  repeated Segment segments = 3;
+  repeated string timing_assumptions = 4;
+  optional string promo_code = 5;
+  map<string, string> categories = 6; // Canonical allocation UUID to category.
+}
+message Place {
+  string city_code = 1;
+  string display_name = 2;
+  string zone_id = 3; // IANA identifier.
+}
+message Segment {
+  int32 index = 1;
+  Place origin = 2;
+  Place destination = 3;
+  optional string planned_departure = 4; // ISO-8601 with offset.
+  optional string planned_arrival = 5;
+  repeated Allocation allocations = 6;
+}
+enum Operator { OPERATOR_UNSPECIFIED = 0; RAIL = 1; AIR = 2; CAR = 3; }
+enum Mode { MODE_UNSPECIFIED = 0; TRAIN = 1; AVION = 2; VOITURE = 3; }
+enum Unit { UNIT_UNSPECIFIED = 0; SEAT = 1; DAY = 2; }
+enum Currency { CURRENCY_UNSPECIFIED = 0; MAD = 1; }
+message Money {
+  int64 amount_minor = 1;
+  Currency currency = 2;
+}
+message Allocation {
+  string id = 1;
+  Operator operator = 2;
+  string offer_id = 3;
+  Mode mode = 4;
+  int32 seats_or_passengers = 5;
+  int64 quantity = 6;
+  Unit unit = 7;
+  optional string departure_at = 8;
+  optional string arrival_at = 9;
+  optional string start_date = 10; // ISO-8601 local date.
+  optional string end_date = 11;
+  repeated string participant_aliases = 12;
+  optional string driver_alias = 13;
+  Money unit_price = 14;
+  optional int64 price_version = 15;
+}
+
+// Entries preserve request order. The itinerary and categories stay in the request.
+message Price {
+  Money total = 1;
+  optional string promo_code = 2;
+  string ruleset_version = 3;
+  repeated Line lines = 4;
+}
+message Line {
+  string allocation_id = 1;
+  int32 segment_index = 2;
+  int64 gross_minor = 3;
+  int64 fee_minor = 4;
+  int64 discount_minor = 5;
+  int64 total_minor = 6;
+  repeated Adjustment adjustments = 7;
+}
+message Adjustment {
+  string source_type = 1;
+  string source_id = 2;
+  int32 source_version = 3;
+  sint64 amount_minor = 4;
+  string parameters = 5; // Existing pricing-rule JSON document.
+}
