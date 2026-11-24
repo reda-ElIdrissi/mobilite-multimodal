@@ -27,6 +27,11 @@
 !mobility-observability/src/main/
 !mobility-observability/src/main/**
 
+!pricing-grpc/
+!pricing-grpc/pom.xml
+!pricing-grpc/src/
+!pricing-grpc/src/main/
+!pricing-grpc/src/main/**
 
 !contracts/
 !contracts/pom.xml

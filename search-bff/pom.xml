@@ -7,6 +7,8 @@
   </parent>
   <artifactId>search-bff</artifactId>
   <dependencies>
+    <dependency><groupId>com.transport</groupId><artifactId>pricing-grpc</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>io.grpc</groupId><artifactId>grpc-netty-shaded</artifactId></dependency>
     <dependency>
       <groupId>io.github.resilience4j</groupId>
       <artifactId>resilience4j-bulkhead</artifactId>

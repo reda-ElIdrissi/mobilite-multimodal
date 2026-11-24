@@ -1,0 +1,9 @@
+services:
+  search-bff:
+    environment:
+      SPRING_PROFILES_ACTIVE: demo,grpc-preview
+      MOBILITY_PRICING_GRPC_TARGET: tarification:9090
+  tarification:
+    environment:
+      SPRING_PROFILES_ACTIVE: demo,grpc-preview
+      MOBILITY_PRICING_GRPC_ADDRESS: 0.0.0.0

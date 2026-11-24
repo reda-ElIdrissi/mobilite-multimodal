@@ -40,6 +40,7 @@ class PartnerClient {
     private final Map<Offer.Operator, CircuitBreaker> breakers = new EnumMap<>(Offer.Operator.class);
     private final Map<Offer.Operator, Bulkhead> bulkheads = new EnumMap<>(Offer.Operator.class);
     private final String pricingUrl;
+    private GrpcPreviewClient grpcPreview;
     private final String tokenUrl;
     private final String secret;
     private final RestClient partners = client(Duration.ofSeconds(5));
@@ -88,7 +89,15 @@ class PartnerClient {
         return offers;
     }
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void configureGrpcPreview(GrpcPreviewClient client) {
+        grpcPreview = client;
+    }
+
     List<Price> preview(PreviewBatch batch, String accessToken) {
+        if (grpcPreview != null) {
+            return grpcPreview.preview(batch, accessToken);
+        }
         return partners.post().uri(pricingUrl + "/internal/v1/pricing/preview")
                 .headers(headers -> headers.setBearerAuth(accessToken)).body(batch).retrieve()
                 .body(new ParameterizedTypeReference<List<Price>>() {});

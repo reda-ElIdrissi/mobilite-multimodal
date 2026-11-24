@@ -7,6 +7,7 @@ ARG MODULE
 WORKDIR /app
 COPY pom.xml .
 COPY contracts contracts
+COPY pricing-grpc pricing-grpc
 COPY mobility-observability mobility-observability
 COPY operator-journal operator-journal
 COPY autopartage autopartage
