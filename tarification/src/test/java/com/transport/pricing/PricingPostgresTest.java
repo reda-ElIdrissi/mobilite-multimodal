@@ -38,13 +38,16 @@ class PricingPostgresTest {
             sql.execute("CREATE SCHEMA " + schema);
             String scoped = url + (url.contains("?") ? "&" : "?") + "currentSchema=" + schema;
             try (var context = new SpringApplicationBuilder(PricingApplication.class, TestClock.class)
-                    .profiles("demo").run("--server.port=0", "--spring.rabbitmq.listener.simple.auto-startup=false", "--spring.datasource.url=" + scoped,
+                    .profiles("demo", "grpc-preview").run("--server.port=0", "--mobility.pricing.grpc-port=0", "--spring.rabbitmq.listener.simple.auto-startup=false", "--spring.datasource.url=" + scoped,
                             "--spring.datasource.username=" + user, "--spring.datasource.password=" + password)) {
                 var service = context.getBean(PricingService.class);
                 var clock = context.getBean(MutableClock.class);
                 var db = context.getBean(JdbcTemplate.class);
                 var basket = PricingEngineTest.sample("DEMO");
                 assertEquals(409500, service.preview(new PreviewBatch(List.of(basket, basket))).get(0).total().amountMinor());
+                assertEquals(0, db.queryForObject("SELECT count(*) FROM devis", Integer.class));
+                GrpcPreviewChecks.verify((org.springframework.boot.web.server.context.WebServerApplicationContext) context,
+                        basket, PricingEngineTest.sample(null));
                 assertEquals(0, db.queryForObject("SELECT count(*) FROM devis", Integer.class));
                 var quote = service.issue(new Issue("owner", basket));
                 assertEquals(409500, quote.price().total().amountMinor());
@@ -119,6 +122,16 @@ class PricingPostgresTest {
 
     @TestConfiguration
     static class TestClock {
+        @Bean
+        org.springframework.security.oauth2.jwt.JwtDecoder demoJwtDecoder() {
+            return token -> switch (token) {
+                case "preview-test", "other-scope-test" -> org.springframework.security.oauth2.jwt.Jwt
+                        .withTokenValue(token).header("alg", "RS256").subject("preview")
+                        .claim("scope", token.equals("preview-test") ? "pricing:issue" : "pricing:claim").build();
+                default -> throw new org.springframework.security.oauth2.jwt.BadJwtException("Invalid test token");
+            };
+        }
+
         @Bean
         @Primary
         MutableClock mutableClock() {

@@ -58,6 +58,7 @@ Le test smoke appelle les partenaires avec de vrais clients CORBA et SOAP. Pour 
 - La réservation renvoie une URI de suivi. `Idempotency-Key` permet de rejouer une création ou une annulation. Les notifications sont consultables par leur destinataire, avec un filtre `unread`.
 - Les dates des fixtures sont figées au 15 novembre 2026. Une recherche anonyme peut retourner des résultats partiels si un opérateur ou Tarification est indisponible. La composition avec `maxSegments` retourne une sélection réutilisable pour créer un devis.
 - `docker compose ps` affiche la disponibilité des services. `docker compose logs rail rail-bridge` affiche le démarrage du serveur et du bridge CORBA. Les scripts historiques restent disponibles pour les volumes déjà configurés.
+- L’aperçu gRPC facultatif utilise l’override `infra/demo/compose-grpc-preview.yml`. La configuration Compose de base utilise REST.
 
 ## Architecture et réservation
 
