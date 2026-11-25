@@ -60,7 +60,8 @@ class SagaMessaging {
                         properties.setHeader("traceparent", context);
                     }
                     var confirmation=new CorrelationData(event.id().toString());
-                    // A result queue retains events until the consumers of the next lot are deployed.
+                    // Durable, bound queues retain persistent messages while consumers are offline.
+                    // Keep the outbox entry pending until the broker acknowledges a routed publication.
                     rabbit.send(EventTopology.EXCHANGE,event.type(),new Message(event.payload().getBytes(StandardCharsets.UTF_8),properties),confirmation);
                     if (confirmation.getFuture().get(2,TimeUnit.SECONDS).ack() && confirmation.getReturned()==null) {
                         db.update("UPDATE outbox_event SET published_at=now() WHERE id=?",event.id());

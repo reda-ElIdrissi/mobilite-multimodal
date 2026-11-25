@@ -68,7 +68,7 @@ services:
       test: [CMD, bash, -ec, "exec 3<>/dev/tcp/127.0.0.1/8080; printf 'GET /realms/mobility/.well-known/openid-configuration HTTP/1.0\r\nHost: localhost:8088\r\n\r\n' >&3; read -r status <&3; [[ $$status == *' 200 '* ]]"]
       interval: 5s
       timeout: 3s
-      start_period: 60s
+      start_period: 180s
       retries: 16
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: mobility-admin

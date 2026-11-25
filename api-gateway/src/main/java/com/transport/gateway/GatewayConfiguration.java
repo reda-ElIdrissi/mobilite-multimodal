@@ -2,6 +2,7 @@ package com.transport.gateway;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +31,18 @@ class GatewayConfiguration {
     private static final String NOTIFICATIONS = "/api/v1/notifications";
     private static final String NOTIFICATION_PATHS = NOTIFICATIONS + "/**";
     private static final String SEARCH = "/api/v1/search";
+    private static final List<String> CLIENT_IDENTITY_HEADERS = List.of(
+            "X-User-Id", "X-Owner-Id", "X-Renter-Id", "X-Actor-User-Id");
+
+    @Bean
+    GlobalFilter removeClientIdentityHeaders() {
+        return (exchange, chain) -> {
+            var request = exchange.getRequest().mutate()
+                    .headers(headers -> CLIENT_IDENTITY_HEADERS.forEach(headers::remove))
+                    .build();
+            return chain.filter(exchange.mutate().request(request).build());
+        };
+    }
 
     @Bean
     SecurityWebFilterChain security(ServerHttpSecurity http, @Value("${mobility.web-origin}") String origin) {
@@ -61,13 +74,8 @@ class GatewayConfiguration {
             @Value("${mobility.reservation-url}") String reservation,
             @Value("${mobility.notification-url}") String notification) {
         return routes.routes().route("autopartage", route -> route.path(VEHICLES, VEHICLE_PATHS, LOCATIONS)
-                .filters(filters -> filters.removeRequestHeader("X-User-Id")
-                        .removeRequestHeader("X-Owner-Id").removeRequestHeader("X-Renter-Id")
-                        .removeRequestHeader("X-Actor-User-Id"))
                 .uri(uri)).route("search-bff", route -> route.path(SEARCH).and().method(HttpMethod.POST)
-                        .filters(filters -> filters.removeRequestHeader("Authorization").removeRequestHeader("X-User-Id")
-                                .removeRequestHeader("X-Owner-Id").removeRequestHeader("X-Renter-Id")
-                                .removeRequestHeader("X-Actor-User-Id"))
+                        .filters(filters -> filters.removeRequestHeader("Authorization"))
                         .uri(bff))
                 .route("quotes", route -> route.path(QUOTES, QUOTE_PATHS).uri(bff))
                 .route("pricing-admin", route -> route.path(RULES, PROMOTIONS).uri(pricing))
