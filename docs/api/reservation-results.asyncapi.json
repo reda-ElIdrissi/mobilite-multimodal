@@ -1,9 +1,9 @@
 {
   "asyncapi": "3.0.0",
   "info": {
-    "title": "R?sultats des r?servations",
+    "title": "Résultats des réservations",
     "version": "1.0.0",
-    "description": "R?sultats publi?s en mode au moins une fois. Files pricing.reservation-results et notification.reservation-results, avec une DLQ chacune."
+    "description": "Résultats publiés au moins une fois sur mobility.events. Les files durables pricing.reservation-results et notification.reservation-results sont liées à reservation.*.v1 et possèdent chacune une DLQ. Les signaux internes saga.requested.v1 et saga.step-changed.v1 circulent sur le même exchange avec leurs propres files et payloads."
   },
   "channels": {
     "outcome1": {
@@ -116,7 +116,14 @@
         "contentType": "application/json",
         "headers": {
           "type": "object",
+          "required": [
+            "reservationId"
+          ],
           "properties": {
+            "reservationId": {
+              "type": "string",
+              "format": "uuid"
+            },
             "traceparent": {
               "type": "string"
             }
@@ -169,7 +176,9 @@
               "minimum": 1
             },
             "userId": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255
             },
             "correlationId": {
               "type": "string",

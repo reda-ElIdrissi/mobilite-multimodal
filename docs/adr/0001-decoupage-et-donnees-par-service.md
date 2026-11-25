@@ -7,10 +7,10 @@ L'énoncé exige des microservices autonomes (contextes délimités, base par se
 
 ## Décision
 - **Services métier** (Spring Boot) : `autopartage`, `tarification`, `reservation` (dossier et saga), `notification`.
-- **Services d'exposition et d'intégration** : `api-gateway`, `search-bff`, `rail-bridge`, `air-bridge`.
+- **Services d'exposition et d'intégration** : `api-gateway` et `search-bff` sans base métier, et deux bridges dotés chacun d'une base pour le journal des opérations.
 - **Une base PostgreSQL et un compte par propriétaire** (`autopartage-db`, `tarification-db`, `reservation-db`, `notification-db`, `rail-bridge-db`, `air-bridge-db`, plus celle de Keycloak). Aucune jointure, clé étrangère ni SQL entre services : les références externes sont des identifiants.
 - **API versionnée** : `/api/v1` côté client, `/internal/v1` entre services. Les contrats sont dans `docs/api` (OpenAPI, AsyncAPI).
-- Des modules Maven partagés portent uniquement des contrats et du code transverse : `contracts`, `result-events`, `operator-journal`, `search-catalog`, `mobility-observability`.
+- Des modules Maven partagés portent les contrats et le code transverse : `contracts`, `result-events`, `operator-journal`, `search-catalog`, `mobility-observability` et `pricing-grpc`.
 
 ## Alternatives écartées
 - **Monolithe modulaire** : simplifierait l'ACID, mais contredit l'autonomie demandée.

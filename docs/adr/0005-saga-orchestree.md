@@ -10,7 +10,7 @@ Le service `reservation` est l'**orchestrateur unique** :
 - `POST /api/v1/reservations` enregistre en une transaction PostgreSQL le dossier, la clé d'idempotence, la saga et l'outbox, puis répond `202` avec une URI de suivi.
 - Pour chaque dossier : réclamation du devis, revérification des offres, puis holds, puis confirms, dans l'ordre rail, air, voiture (et dans l'ordre des lignes pour un même opérateur). La fenêtre de maintien est contrôlée avant chaque confirmation.
 - En cas d'échec, compensation en ordre inverse : annulation des maintiens et confirmations connus. Issues possibles : `CONFIRMED`, `FAILED_COMPENSATED`, `CANCELLED`, ou `NEEDS_RECONCILIATION` quand aucune preuve ne permet de trancher (ADR 0006).
-- Chaque étape a un identifiant stable et passe à `IN_FLIGHT` avant l'appel distant. Un lease persistant avec jeton de clôture garantit un seul worker actif par dossier ; aucune transaction locale n'est ouverte pendant un appel distant.
+- Chaque étape a un identifiant stable et passe à `IN_FLIGHT` avant l'appel distant, qui s'exécute hors transaction locale. Un worker peut rester actif après expiration de son lease tandis qu'un autre reprend le dossier. Le jeton et la validité du lease conditionnent les transitions persistantes sous verrou PostgreSQL. Les journaux des participants bloquent les rejeux dangereux lors d'un chevauchement (ADR 0006).
 - La **chorégraphie** n'intervient qu'en aval, pour les réactions non critiques au résultat final (Tarification, Notifications : ADR 0007).
 
 ## Alternatives écartées
@@ -21,4 +21,4 @@ Le service `reservation` est l'**orchestrateur unique** :
 ## Conséquences
 - L'état d'un dossier se lit en un point (`GET /api/v1/reservations/{id}`, plus la vue des opérations pour `SUPPORT_ADMIN`), et la trace Jaeger suit la saga de bout en bout.
 - L'orchestrateur est un point central, atténué par la persistance, le lease et la reprise à partir des étapes journalisées.
-- Chaque opérateur est ACID localement ; la fédération n'est cohérente qu'à terme, après compensation.
+- Autopartage garantit des mutations locales transactionnelles. La cohérence à terme dépend des résultats observables et des compensations confirmées. Les résultats legacy ambigus restent visibles en réconciliation.

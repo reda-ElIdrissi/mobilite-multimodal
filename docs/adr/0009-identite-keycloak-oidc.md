@@ -8,7 +8,7 @@ Le client doit s'authentifier et chaque ressource (dossier, véhicule, notificat
 ## Décision
 - **Keycloak** (realm unique) comme fournisseur OIDC. Le navigateur utilise Authorization Code avec PKCE S256 ; les composants techniques (BFF, Réservation, Tarification) utilisent Client Credentials.
 - La Gateway et chaque service valident indépendamment signature (JWKS), issuer, durée et audience `mobility-api`.
-- L'identité métier est le claim `sub`, filtré côté service (dossiers, locations, notifications). La Gateway retire les en-têtes d'identité fournis par le client.
+- L'identité métier provient du claim `sub`. Les services l'utilisent pour filtrer dossiers, véhicules, locations et notifications. Sur chaque route, le filtre global de la Gateway retire `X-User-Id`, `X-Owner-Id`, `X-Renter-Id` et `X-Actor-User-Id`. Le JWT est relayé sur les routes protégées. Le BFF utilise son propre jeton technique pour la recherche publique.
 - Autorisations par scopes et rôles : `offers:read` (recherche interne, client `search-bff`), `operators:write` (commandes d'opérateur, client Réservation), `pricing:issue`, `pricing:claim`, `locations:read`, rôles `OWNER`, `PRICING_ADMIN`, `SUPPORT_ADMIN`.
 
 ## Alternatives écartées

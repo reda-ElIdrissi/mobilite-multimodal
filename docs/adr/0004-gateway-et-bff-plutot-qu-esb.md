@@ -7,7 +7,7 @@ Le client attend une API unique, authentifiée et cohérente devant une dizaine 
 
 ## Décision
 Deux responsabilités séparées :
-1. **`api-gateway`** (Spring Cloud Gateway), seul point d'entrée (`:8080`), sans logique métier : routage de `/api/v1/*`, validation du JWT (signature, issuer, audience `mobility-api`), suppression des en-têtes d'identité fournis par le client (`X-User-Id`, etc.), CORS, refus de tout chemin non déclaré. Seule `POST /api/v1/search` est publique.
+1. **`api-gateway`** (Spring Cloud Gateway), point d'entrée de l'API métier sur `:8080`. Il valide le JWT, applique CORS, refuse les chemins hors de la liste autorisée et transmet les requêtes aux services. Un filtre global retire `X-User-Id`, `X-Owner-Id`, `X-Renter-Id` et `X-Actor-User-Id` sur toutes les routes. Les routes protégées transmettent le JWT. La seule route métier publique, `POST /api/v1/search`, retire aussi `Authorization` avant d'appeler le BFF. Le filtre d'identité laisse passer les en-têtes de traçabilité.
 2. **`search-bff`** : agrégation des lectures (bridges et Autopartage en parallèle), composition d'itinéraires, aperçu tarifaire, réponses partielles (`partial=true`) si un opérateur tombe (ADR 0011).
 
 La médiation de protocole reste dans les bridges (ADR 0002) et l'orchestration transactionnelle dans Réservation (ADR 0005).

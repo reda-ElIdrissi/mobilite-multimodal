@@ -3,7 +3,7 @@
   "info": {
     "title": "Contrats canoniques de mobilité",
     "version": "1.0.0",
-    "description": "Recherche, tarification, saga de r?servation et notifications in-app."
+    "description": "Recherche, autopartage, tarification, saga de réservation et notifications in-app."
   },
   "paths": {
     "/internal/v1/offers/search": {
@@ -125,7 +125,7 @@
             "description": "Scope technique requis"
           }
         },
-        "description": "Scope operators:write, avec cl? operationId stable et appartenance ? la m?me ligne de r?servation.",
+        "description": "Scope operators:write, avec operationId stable et appartenance à la même ligne de réservation.",
         "security": [
           {
             "serviceJwt": []
@@ -201,7 +201,7 @@
             "description": "Scope technique requis"
           }
         },
-        "description": "Scope operators:write, avec cl? operationId stable et appartenance ? la m?me ligne de r?servation.",
+        "description": "Scope operators:write, avec operationId stable et appartenance à la même ligne de réservation.",
         "security": [
           {
             "serviceJwt": []
@@ -267,7 +267,7 @@
             "description": "Scope technique requis"
           }
         },
-        "description": "Scope operators:write, avec cl? operationId stable et appartenance ? la m?me ligne de r?servation.",
+        "description": "Scope operators:write, avec operationId stable et appartenance à la même ligne de réservation.",
         "security": [
           {
             "serviceJwt": []
@@ -344,7 +344,7 @@
         },
         "responses": {
           "200": {
-            "description": "Recherche compl?te ou partielle",
+            "description": "Recherche complète ou partielle",
             "content": {
               "application/json": {
                 "schema": {
@@ -364,7 +364,7 @@
             }
           },
           "503": {
-            "description": "Aucun op?rateur demand? ne r?pond",
+            "description": "Aucun opérateur demandé ne répond",
             "content": {
               "application/json": {
                 "schema": {
@@ -403,10 +403,10 @@
             "description": "JWT absent ou invalide"
           },
           "409": {
-            "description": "Offre indisponible ou conflit de r?clamation"
+            "description": "Offre indisponible ou conflit de réclamation"
           },
           "503": {
-            "description": "D?pendance indisponible"
+            "description": "Dépendance indisponible"
           }
         },
         "requestBody": {
@@ -442,7 +442,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Succ?s",
+            "description": "Succès",
             "content": {
               "application/json": {
                 "schema": {
@@ -458,7 +458,7 @@
             "description": "Devis introuvable"
           },
           "503": {
-            "description": "D?pendance indisponible"
+            "description": "Dépendance indisponible"
           }
         }
       }
@@ -473,7 +473,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Succ?s",
+            "description": "Succès",
             "content": {
               "application/json": {
                 "schema": {
@@ -577,7 +577,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Succ?s",
+            "description": "Succès",
             "content": {
               "application/json": {
                 "schema": {
@@ -619,7 +619,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Succ?s",
+            "description": "Succès",
             "content": {
               "application/json": {
                 "schema": {
@@ -641,7 +641,7 @@
             "description": "Devis introuvable"
           },
           "409": {
-            "description": "Offre indisponible ou conflit de r?clamation"
+            "description": "Offre indisponible ou conflit de réclamation"
           },
           "410": {
             "description": "Devis expir?"
@@ -669,7 +669,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Succ?s",
+            "description": "Succès",
             "content": {
               "application/json": {
                 "schema": {
@@ -711,7 +711,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Configuration enregistr?e"
+            "description": "Configuration enregistrée"
           },
           "400": {
             "description": "Demande invalide"
@@ -743,7 +743,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Configuration enregistr?e"
+            "description": "Configuration enregistrée"
           },
           "400": {
             "description": "Demande invalide"
@@ -767,7 +767,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Succ?s",
+            "description": "Succès",
             "content": {
               "application/json": {
                 "schema": {
@@ -808,7 +808,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Configuration enregistr?e"
+            "description": "Configuration enregistrée"
           },
           "400": {
             "description": "Demande invalide"
@@ -840,7 +840,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Configuration enregistr?e"
+            "description": "Configuration enregistrée"
           },
           "400": {
             "description": "Demande invalide"
@@ -854,10 +854,624 @@
         }
       }
     },
-    "/api/v1/vehicules/{id}/handover": {
+    "/api/v1/vehicules": {
+      "post": {
+        "operationId": "createVehicle",
+        "summary": "Créer un véhicule",
+        "description": "JWT avec le rôle OWNER. Le propriétaire est le sujet du JWT. Le véhicule est créé désactivé.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddVehiculeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Résultat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehiculeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT absent ou invalide. Si le sujet JWT est inexploitable, Autopartage renvoie INVALID_CALLER.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Autorisation insuffisante. Si un autre propriétaire possède le véhicule, Autopartage renvoie OWNERSHIP_REQUIRED.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Codes applicatifs possibles : MALFORMED_BODY, VALIDATION_FAILED, UNKNOWN_CITY, UNKNOWN_CATEGORY.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Codes applicatifs possibles : DUPLICATE_REGISTRATION.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "userJwt": []
+          }
+        ]
+      }
+    },
+    "/api/v1/vehicules/mine": {
+      "get": {
+        "operationId": "listOwnedVehicles",
+        "summary": "Lister ses véhicules",
+        "description": "JWT avec le rôle OWNER. Les résultats sont filtrés par sujet et ordonnés par identifiant croissant par défaut.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Index de page à partir de zéro.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Nombre de résultats par page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Propriété de tri et direction facultative, par exemple id,asc. Paramètre répétable.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehiculePage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT absent ou invalide. Si le sujet JWT est inexploitable, Autopartage renvoie INVALID_CALLER.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Autorisation insuffisante. Si un autre propriétaire possède le véhicule, Autopartage renvoie OWNERSHIP_REQUIRED.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "userJwt": []
+          }
+        ]
+      }
+    },
+    "/api/v1/vehicules/{vehiculeId}": {
       "parameters": [
         {
-          "name": "id",
+          "name": "vehiculeId",
+          "in": "path",
+          "required": true,
+          "description": "Identifiant du véhicule.",
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "patch": {
+        "operationId": "editVehicle",
+        "summary": "Modifier un véhicule",
+        "description": "JWT avec le rôle OWNER. Le claim sub doit correspondre au propriétaire du véhicule. Les champs absents ou null sont ignorés. Un changement de ville désactive le véhicule.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditVehiculeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Résultat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehiculeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT absent ou invalide. Si le sujet JWT est inexploitable, Autopartage renvoie INVALID_CALLER.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Autorisation insuffisante. Si un autre propriétaire possède le véhicule, Autopartage renvoie OWNERSHIP_REQUIRED.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Codes applicatifs possibles : MALFORMED_BODY, VALIDATION_FAILED, INVALID_PARAMETER, UNKNOWN_CITY, UNKNOWN_CATEGORY.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Codes applicatifs possibles : VEHICULE_NOT_FOUND.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Codes applicatifs possibles : DUPLICATE_REGISTRATION, VEHICULE_HAS_BOOKINGS, HANDOVER_REQUIRED.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "userJwt": []
+          }
+        ]
+      }
+    },
+    "/api/v1/vehicules/{vehiculeId}/enable": {
+      "parameters": [
+        {
+          "name": "vehiculeId",
+          "in": "path",
+          "required": true,
+          "description": "Identifiant du véhicule.",
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "patch": {
+        "operationId": "enableVehicle",
+        "summary": "Activer un véhicule",
+        "description": "JWT avec le rôle OWNER. Le claim sub doit correspondre au propriétaire du véhicule. Un tarif journalier, une capacité et une permission de destination encore valide sont requis.",
+        "responses": {
+          "200": {
+            "description": "Résultat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehiculeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT absent ou invalide. Si le sujet JWT est inexploitable, Autopartage renvoie INVALID_CALLER.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Autorisation insuffisante. Si un autre propriétaire possède le véhicule, Autopartage renvoie OWNERSHIP_REQUIRED.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Codes applicatifs possibles : INVALID_PARAMETER.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Codes applicatifs possibles : VEHICULE_NOT_FOUND.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Codes applicatifs possibles : VEHICULE_NOT_CONFIGURED.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "userJwt": []
+          }
+        ]
+      }
+    },
+    "/api/v1/vehicules/{vehiculeId}/disable": {
+      "parameters": [
+        {
+          "name": "vehiculeId",
+          "in": "path",
+          "required": true,
+          "description": "Identifiant du véhicule.",
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "patch": {
+        "operationId": "disableVehicle",
+        "summary": "Désactiver un véhicule",
+        "description": "JWT avec le rôle OWNER. Le claim sub doit correspondre au propriétaire du véhicule. Le véhicule est retiré des nouvelles offres.",
+        "responses": {
+          "200": {
+            "description": "Résultat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehiculeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT absent ou invalide. Si le sujet JWT est inexploitable, Autopartage renvoie INVALID_CALLER.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Autorisation insuffisante. Si un autre propriétaire possède le véhicule, Autopartage renvoie OWNERSHIP_REQUIRED.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Codes applicatifs possibles : INVALID_PARAMETER.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Codes applicatifs possibles : VEHICULE_NOT_FOUND.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "userJwt": []
+          }
+        ]
+      }
+    },
+    "/api/v1/vehicules/{vehiculeId}/destinations": {
+      "parameters": [
+        {
+          "name": "vehiculeId",
+          "in": "path",
+          "required": true,
+          "description": "Identifiant du véhicule.",
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "put": {
+        "operationId": "replaceVehicleDestinations",
+        "summary": "Remplacer les destinations autorisées",
+        "description": "JWT avec le rôle OWNER. Le claim sub doit correspondre au propriétaire du véhicule. Une liste vide désactive le véhicule. Les permissions identiques sont dédupliquées.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DestinationPermissionsUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Résultat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DestinationPermission"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT absent ou invalide. Si le sujet JWT est inexploitable, Autopartage renvoie INVALID_CALLER.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Autorisation insuffisante. Si un autre propriétaire possède le véhicule, Autopartage renvoie OWNERSHIP_REQUIRED.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Codes applicatifs possibles : MALFORMED_BODY, VALIDATION_FAILED, INVALID_PARAMETER, UNKNOWN_CITY, INVALID_PERMISSION_DATES.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Codes applicatifs possibles : VEHICULE_NOT_FOUND.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Codes applicatifs possibles : VEHICULE_HAS_BOOKINGS.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "userJwt": []
+          }
+        ]
+      }
+    },
+    "/api/v1/locations": {
+      "get": {
+        "operationId": "listRentalHistory",
+        "summary": "Consulter son historique de locations",
+        "description": "JWT avec le scope locations:read. Le rôle de consultation sélectionne les locations associées au sujet du JWT, comme locataire ou propriétaire.",
+        "parameters": [
+          {
+            "name": "role",
+            "in": "query",
+            "description": "Point de vue sur l’historique.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "renter",
+                "owner"
+              ],
+              "default": "renter"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Index de page à partir de zéro.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Nombre de résultats par page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Propriété de tri et direction facultative, par exemple id,asc. Paramètre répétable.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationHistoryPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT absent ou invalide. Si le sujet JWT est inexploitable, Autopartage renvoie INVALID_CALLER.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Autorisation insuffisante. Si un autre propriétaire possède le véhicule, Autopartage renvoie OWNERSHIP_REQUIRED.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Codes applicatifs possibles : INVALID_PARAMETER.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopartageError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "userJwt": []
+          }
+        ]
+      }
+    },
+    "/api/v1/vehicules/{vehiculeId}/handover": {
+      "parameters": [
+        {
+          "name": "vehiculeId",
           "in": "path",
           "required": true,
           "schema": {
@@ -885,7 +1499,7 @@
         },
         "responses": {
           "200": {
-            "description": "Remise enregistr?e",
+            "description": "Remise enregistrée",
             "content": {
               "application/json": {
                 "schema": {
@@ -895,7 +1509,7 @@
             }
           },
           "403": {
-            "description": "Propri?taire requis"
+            "description": "Propriétaire requis"
           },
           "409": {
             "description": "Remise impossible pour cet ?tat ou cette date"
@@ -913,7 +1527,7 @@
         ],
         "responses": {
           "202": {
-            "description": "Dossier accept?. Suivre Location pour le r?sultat.",
+            "description": "Dossier accepté. Suivre Location pour le résultat.",
             "content": {
               "application/json": {
                 "schema": {
@@ -933,7 +1547,7 @@
             "description": "Devis introuvable"
           },
           "409": {
-            "description": "Devis ou cl? d?j? utilis?e"
+            "description": "Devis ou clé déjà utilisée"
           },
           "410": {
             "description": "Devis expir?"
@@ -1064,7 +1678,7 @@
         ],
         "responses": {
           "202": {
-            "description": "Dossier accept?. Suivre Location pour le r?sultat.",
+            "description": "Dossier accepté. Suivre Location pour le résultat.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1119,7 +1733,7 @@
         ],
         "responses": {
           "202": {
-            "description": "Preuve enregistr?e"
+            "description": "Preuve enregistrée"
           },
           "409": {
             "description": "Preuve inapplicable"
@@ -1158,7 +1772,7 @@
         ],
         "responses": {
           "200": {
-            "description": "?tapes de la saga et leurs r?sultats",
+            "description": "Étapes de la saga et leurs résultats",
             "content": {
               "application/json": {
                 "schema": {
@@ -1194,7 +1808,7 @@
         ],
         "responses": {
           "200": {
-            "description": "R?sultat du dossier",
+            "description": "Résultat du dossier",
             "content": {
               "application/json": {
                 "schema": {
@@ -1284,7 +1898,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Notification marqu?e comme lue"
+            "description": "Notification marquée comme lue"
           },
           "404": {
             "description": "Notification introuvable pour le sujet"
@@ -1772,7 +2386,7 @@
           },
           "origin": {
             "type": "string",
-            "description": "Code canonique de la ville de d?part au moment du devis."
+            "description": "Code canonique de la ville de départ au moment du devis."
           }
         },
         "required": [
@@ -3021,6 +3635,495 @@
               "string",
               "null"
             ]
+          }
+        }
+      },
+      "AddVehiculeRequest": {
+        "type": "object",
+        "required": [
+          "marque",
+          "modele",
+          "immatriculation",
+          "couleur",
+          "ville",
+          "categorie"
+        ],
+        "properties": {
+          "marque": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "modele": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "immatriculation": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "couleur": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "ville": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "categorie": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "dailyRateMinor": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 1
+          },
+          "passengerCapacity": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 1
+          }
+        }
+      },
+      "EditVehiculeRequest": {
+        "type": "object",
+        "properties": {
+          "marque": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "modele": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "immatriculation": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "couleur": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "ville": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "categorie": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "dailyRateMinor": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 1
+          },
+          "passengerCapacity": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 1
+          }
+        }
+      },
+      "VehiculeResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "ownerId",
+          "marque",
+          "modele",
+          "immatriculation",
+          "couleur",
+          "ville",
+          "categorie",
+          "addedAt",
+          "isAvailable",
+          "priceVersion"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "ownerId": {
+            "type": "string"
+          },
+          "marque": {
+            "type": "string"
+          },
+          "modele": {
+            "type": "string"
+          },
+          "immatriculation": {
+            "type": "string"
+          },
+          "couleur": {
+            "type": "string"
+          },
+          "ville": {
+            "type": "string"
+          },
+          "categorie": {
+            "type": "string"
+          },
+          "addedAt": {
+            "type": "string",
+            "format": "date"
+          },
+          "isAvailable": {
+            "type": "boolean"
+          },
+          "dailyRateMinor": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 1
+          },
+          "passengerCapacity": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 1
+          },
+          "priceVersion": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "DestinationPermission": {
+        "type": "object",
+        "required": [
+          "destination",
+          "debut",
+          "fin"
+        ],
+        "properties": {
+          "destination": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "debut": {
+            "type": "string",
+            "format": "date"
+          },
+          "fin": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "DestinationPermissionsUpdate": {
+        "type": "object",
+        "required": [
+          "permissions"
+        ],
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DestinationPermission"
+            },
+            "maxItems": 100
+          }
+        }
+      },
+      "LocationHistoryItem": {
+        "type": "object",
+        "required": [
+          "id",
+          "depart",
+          "destination",
+          "debut",
+          "fin",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "depart": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "debut": {
+            "type": "string",
+            "format": "date"
+          },
+          "fin": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CONFIRMED",
+              "CANCELLED",
+              "FAILED",
+              "EXPIRED"
+            ]
+          },
+          "ratingOwner": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "ratingRenter": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "AutopartageError": {
+        "type": "object",
+        "required": [
+          "status",
+          "code",
+          "message",
+          "fieldErrors"
+        ],
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "fieldErrors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "VehiculePage": {
+        "type": "object",
+        "required": [
+          "content",
+          "totalElements",
+          "totalPages",
+          "number",
+          "size"
+        ],
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VehiculeResponse"
+            }
+          },
+          "pageable": {
+            "type": "object",
+            "properties": {
+              "pageNumber": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "pageSize": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "sort": {
+                "$ref": "#/components/schemas/PageSortState"
+              },
+              "offset": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "paged": {
+                "type": "boolean"
+              },
+              "unpaged": {
+                "type": "boolean"
+              }
+            }
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/PageSortState"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "LocationHistoryPage": {
+        "type": "object",
+        "required": [
+          "content",
+          "totalElements",
+          "totalPages",
+          "number",
+          "size"
+        ],
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocationHistoryItem"
+            }
+          },
+          "pageable": {
+            "type": "object",
+            "properties": {
+              "pageNumber": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "pageSize": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "sort": {
+                "$ref": "#/components/schemas/PageSortState"
+              },
+              "offset": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "paged": {
+                "type": "boolean"
+              },
+              "unpaged": {
+                "type": "boolean"
+              }
+            }
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/PageSortState"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageSortState": {
+        "type": "object",
+        "required": [
+          "empty",
+          "sorted",
+          "unsorted"
+        ],
+        "properties": {
+          "empty": {
+            "type": "boolean"
+          },
+          "sorted": {
+            "type": "boolean"
+          },
+          "unsorted": {
+            "type": "boolean"
           }
         }
       }
