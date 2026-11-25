@@ -17,5 +17,5 @@ Le bus doit réveiller le worker de saga, diffuser le résultat d'un dossier à 
 **Kafka** : journal rejouable, fort débit, ordre par partition. Aucun n'est nécessaire ici (rejeu assuré par l'outbox, ordre par version d'événement, volume faible), et il faudrait coder reprises et DLQ, avec une pile plus lourde.
 
 ## Conséquences
-- Pas de rétention longue : un nouveau consommateur ne relit pas l'historique depuis le bus, l'outbox reste la source de vérité.
+- Les files de résultats déjà liées conservent les messages persistants tant qu'ils attendent un consommateur. Une nouvelle file reçoit les publications à partir de sa liaison à l'exchange. L'outbox conserve l'enregistrement des publications.
 - Livraison « au moins une fois » : tous les consommateurs doivent être idempotents.

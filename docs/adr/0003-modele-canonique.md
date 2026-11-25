@@ -29,5 +29,5 @@ Chaque bridge traduit son partenaire vers ce modèle et seulement vers lui. Les 
 - **Prix en `double`** : erreurs d'arrondi. Le centime entier est déjà l'unité des partenaires.
 
 ## Conséquences
-- La saga, le BFF et la tarification partagent un seul vocabulaire ; ajouter un mode revient à ajouter un bridge.
+- La saga, le BFF et la tarification partagent un seul vocabulaire. Un nouveau partenaire peut implémenter le contrat interne via un bridge. Un nouveau mode peut aussi demander une extension du modèle et de ses règles métier.
 - Le module partagé est un noyau commun. Le versionnement `v1` (paquetage, OpenAPI, routes) permet d'introduire une v2 sans rupture.
